@@ -4,10 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.InvocationTargetException;
@@ -86,6 +83,16 @@ public class HighPingKickPlugin extends JavaPlugin implements Runnable, Listener
     @EventHandler
     public void onAsyncChat(AsyncPlayerChatEvent event) {
         // cancel chat if first time online and has not moved
+        if (!event.getPlayer().hasPlayedBefore()) {
+            if (!MOVED_USERS.contains(event.getPlayer().getUniqueId())) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPreCommand(PlayerCommandPreprocessEvent event) {
+        // cancel command if first time online and has not moved
         if (!event.getPlayer().hasPlayedBefore()) {
             if (!MOVED_USERS.contains(event.getPlayer().getUniqueId())) {
                 event.setCancelled(true);
