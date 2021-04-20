@@ -7,7 +7,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -17,25 +16,31 @@ public class HighPingKickPlugin extends JavaPlugin implements Runnable, Listener
     private static final Map<UUID, Long> JOINED_AT = new HashMap<>();
     private static final Set<UUID> MOVED_USERS = new HashSet<>();
 
+    public static int getPing(Player player) throws Exception {
+        Object entityPlayer = player.getClass().getMethod("getHandle").invoke(player);
+        return (int) entityPlayer.getClass().getField("ping").get(entityPlayer);
+    }
+
     @Override
     public void onEnable() {
         getServer().getPluginManager().registerEvents(this, this);
-
         // run every 20 ticks or ~2 seconds
         getServer().getScheduler().runTaskTimer(this, this, 40L, 40L);
+        getCommand("showping").setExecutor(new ShowPingCommand());
     }
 
     // check task
     @Override
     public void run() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            int ping = 0;
-
+            int ping;
             try {
-                Object entityPlayer = player.getClass().getMethod("getHandle").invoke(player);
-                ping = (int) entityPlayer.getClass().getField("ping").get(entityPlayer);
-            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | NoSuchFieldException e) {
+                ping = getPing(player);
+            } catch (Exception e) {
+                e.printStackTrace();
+                break;
             }
+
 
             int score = 0;
 

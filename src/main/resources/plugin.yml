@@ -3,3 +3,7 @@ version: ${project.version}
 main: ${mainClass}
 author: royalkingkb
 api-version: 1.13
+commands:
+  showping:
+    description: Show someone's ping (or your own)
+    aliases: [ping]
